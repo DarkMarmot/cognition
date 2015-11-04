@@ -1,11 +1,17 @@
 {
-  "name": "cognition",
+  "name": "cognition-framework",
   "version": "1.0.6",
   "description": "SPA javascript component framework",
   "main": "dist/cognition.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "contributors": [
+      {
+          "name": "Scott Southworth",
+          "email": "scott.southworth@gmail.com"
+      }
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/DarkMarmot/cognition.git"
