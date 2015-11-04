@@ -1,2 +1,3 @@
 # cognition
-SPA javascript component framework 
+
+SPA Javascript component framework for making SPA's in Javascript

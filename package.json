@@ -1,0 +1,19 @@
+{
+  "name": "cognition",
+  "version": "1.0.6",
+  "description": "SPA javascript component framework",
+  "main": "dist/cognition.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DarkMarmot/cognition.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DarkMarmot/cognition/issues"
+  },
+  "homepage": "https://github.com/DarkMarmot/cognition#readme"
+}
