@@ -1,6 +1,6 @@
 {
   "name": "cognition-framework",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "SPA javascript component framework",
   "main": "dist/cognition.js",
   "scripts": {
