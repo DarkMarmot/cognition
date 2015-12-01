@@ -1,2 +1,4 @@
-# cognition
-SPA javascript component framework 
+# Cognition
+
+SPA Framework in progress
+

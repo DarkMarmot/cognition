@@ -1,0 +1,29 @@
+{
+  "name": "cognition",
+  "version": "1.0.10",
+  "description": "Cogntion JS SPA framework",
+  "main": "dist/catbus.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DarkMarmot/cognition.git"
+  },
+  "keywords": [
+    "cognition"
+  ],
+  "authors": [
+    "Scott Southworth (https://twitter.com/darkmarmot)",
+    "Landon Barnickle (https://twitter.com/landonb)",
+    "Nick Lorenson (https://twitter.com/enlore)"
+    ],
+  "license": "Apache 2.0",
+  "bugs": {
+    "url": "https://github.com/DarkMarmot/cognition/issues"
+  },
+  "homepage": "https://github.com/DarkMarmot/cognition"
+}
