@@ -1,6 +1,6 @@
 {
-  "name": "cognition",
-  "version": "1.0.10",
+  "name": "cognition-framework",
+  "version": "1.0.12",
   "description": "Cogntion JS SPA framework",
   "main": "dist/catbus.js",
   "directories": {
@@ -20,10 +20,14 @@
     "Scott Southworth (https://twitter.com/darkmarmot)",
     "Landon Barnickle (https://twitter.com/landonb)",
     "Nick Lorenson (https://twitter.com/enlore)"
-    ],
+  ],
   "license": "Apache 2.0",
   "bugs": {
     "url": "https://github.com/DarkMarmot/cognition/issues"
   },
-  "homepage": "https://github.com/DarkMarmot/cognition"
+  "homepage": "https://github.com/DarkMarmot/cognition",
+  "dependencies": {
+    "catbus": "^2.0.7",
+    "jquery": "^2.1.4"
+  }
 }
