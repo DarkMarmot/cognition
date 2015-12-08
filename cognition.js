@@ -2131,11 +2131,10 @@
 
     MapItem.prototype._find = function(name, map, where, optional) {
 
+        where = where || 'first'; // options: local, parent, first, outer, last
 
         if(map === 'dataMap')
             return this.cogZone.findData(name, where, optional);
-
-        where = where || 'first'; // options: local, parent, first, outer, last
 
         if(where === 'local')
             return this._findLocal(name, map);
