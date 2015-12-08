@@ -1,8 +1,8 @@
 {
   "name": "cognition-framework",
-  "version": "1.1.0",
+  "version": "1.0.16-adapting",
   "description": "Cogntion JS SPA framework",
-  "main": "dist/catbus.js",
+  "main": "dist/cognition.js",
   "directories": {
     "test": "test"
   },
@@ -20,7 +20,7 @@
     "url": "git+https://github.com/DarkMarmot/cognition.git"
   },
   "author": "",
-  "license": "ISC",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/DarkMarmot/cognition/issues"
   },
