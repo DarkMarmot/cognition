@@ -17,6 +17,7 @@
      * @authors Scott Southworth @darkmarmot, Landon Barnickle @landonbar, Nick Lorenson @enlore
      *
      */
+
     "use strict";
     var cognition = $.cognition = {};
     var bus = $.catbus = catbus;
@@ -60,7 +61,7 @@
     cognition.buildNum = function(n){
         if(arguments.length == 0) return buildNum;
         buildNum = n;
-        return ndash;
+        return cognition;
     };
 
 
@@ -112,11 +113,7 @@
     }
 
 
-<<<<<<< HEAD
-    $.cog = ndash.use = function(scriptData){
-=======
     $.cog = function(scriptData){
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
         activeScriptData = scriptData;
         // add default methods to this nascent prototype if not present
         $.each(defaultScriptDataPrototype, function(name, func){
@@ -125,15 +122,9 @@
         });
     };
 
-<<<<<<< HEAD
-    ndash.init = function (sel, url, debugUrl){
-
-        var root = ndash.root = new MapItem();
-=======
     cognition.init = function (sel, url, debugUrl){
 
         var root = cognition.root = new MapItem();
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
         root.aliasZone = ALIAS_ROOT;
         root.cogZone = COG_ROOT;
 
@@ -188,15 +179,9 @@
         var stored = contentMap[mapItem.uid];
         if(stored === mapItem) {
             delete contentMap[mapItem.uid];
-<<<<<<< HEAD
-           // console.log("destroyed " + mapItem.uid);
-        }
-      //  if (DEBUG) //console.log("DESTROYED:"+mapItem.uid+":"+mapItem.path);
-=======
             // console.log("destroyed " + mapItem.uid);
         }
 
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
     }
 
 
@@ -274,10 +259,7 @@
 
             name: extractString(sel, 'name'),
             pipe: extractString(sel, 'pipe'),
-<<<<<<< HEAD
-=======
             toggle: extractString(sel, 'toggle'),
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
             filter: extractString(sel, 'filter'),
             topic: extractString(sel, 'on', 'update'),
             run: extractString(sel, 'run'),
@@ -342,20 +324,11 @@
             data: extractString(sel, 'data'),
             find: extractString(sel, 'id,find,node'), // todo switch all to id
             optional: extractBool(sel, 'optional'),
-<<<<<<< HEAD
-            subs: null,
-            where: extractString(sel, 'where', 'first'),
-            thing: extractString(sel, 'is', 'data'), // data, feed, service
-            pipe: extractString(sel, 'pipe'),
-            demand: extractString(sel, 'demand'),
-            pipeWhere: extractString(sel, 'pipeWhere', 'first'), // first, last, local, outer -- todo switch to prop based
-=======
             where: extractString(sel, 'where', 'first'),
             thing: extractString(sel, 'is', 'data'), // data, feed, service
             pipe: extractString(sel, 'pipe'),
             toggle: extractString(sel, 'toggle'),
             demand: extractString(sel, 'demand'),
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
             filter: extractString(sel, 'filter'),
             topic: extractString(sel, 'for,on,topic', 'update'),
             run: extractString(sel, 'run'),
@@ -444,8 +417,6 @@
         };
     }
 
-<<<<<<< HEAD
-=======
     function extractAdapterDef(sel){
 
         var d =  {
@@ -468,7 +439,6 @@
     }
 
 
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
     function extractValveDef(sel){
         return {
             allow: extractStringArray(sel, 'allow'),
@@ -478,11 +448,6 @@
 
     function extractLibraryDef(sel){
         return {
-<<<<<<< HEAD
-            url: extractString(sel, 'url'),
-            path: extractString(sel, 'path'),
-            isLibrary: true
-=======
             name: null,
             url: extractStringArray(sel, 'url'),
             path: extractString(sel, 'path'),
@@ -491,59 +456,29 @@
             isLibrary: true,
             isPreload: false,
             preload: false
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
         };
     }
 
     function extractPreloadDef(sel){
         return {
-<<<<<<< HEAD
-            url: extractString(sel, 'url'),
-            path: extractString(sel, 'path'),
-=======
             name: null,
             url: extractStringArray(sel, 'url'),
             path: extractString(sel, 'path'),
             isRoute: false,
             isAlloy: false,
             isLibrary: false,
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
             isPreload: true,
             preload: true
         };
     }
 
-<<<<<<< HEAD
-    function extractWireDef(sel){
-        return {
-=======
     function extractAlloyDef(sel){
 
         var d = {
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
             url: extractString(sel, 'url'),
             path: extractString(sel, 'path'),
             name: extractString(sel, 'name'),
             isRoute: extractBool(sel, 'route'),
-<<<<<<< HEAD
-            isWire: true
-        };
-    }
-
-    function extractAlloyDef(sel){
-
-        var def = {
-            name: extractString(sel, 'name'),
-            isRoute: extractBool(sel, "route"),
-            url: extractString(sel, 'url'),
-            path: extractString(sel, 'path'),
-            isAlloy: true
-        };
-
-        return def;
-
-    }
-=======
             source: extractString(sel, 'source'),
             item: extractString(sel, 'item','itemData'),
             isAlloy: true,
@@ -559,7 +494,6 @@
     }
 
 
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
 
 
     function extractServiceDef(sel){
@@ -662,10 +596,7 @@
             inherit: extractBool(sel, 'inherit'),
             isRoute: extractBool(sel, 'route'),
             value: extractString(sel, 'value'),
-<<<<<<< HEAD
-=======
             valuePresent: extractHasAttr(sel, 'value'),
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
             valueType: null,
             adapt: extractString(sel, 'adapt'),
             adaptType: null,
@@ -746,37 +677,13 @@
 
     }
 
-<<<<<<< HEAD
-    function extractConfigDef(sel){
-
-        var d = {
-            name: extractString(sel, 'name'),
-            inherit: extractBool(sel, 'inherit'),
-            value: extractString(sel, 'value'),
-            valueType: null,
-            prop: extractBool(sel, 'prop')
-        };
-
-        applyFieldType(d, 'value');
-
-
-        return d;
-
-    }
-
-=======
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
     function extractAliasDef(sel){
 
         return {
             name: extractString(sel, 'name'),
             path: extractString(sel, 'path'),
-<<<<<<< HEAD
-            url: extractString(sel, 'url')
-=======
             url: extractString(sel, 'url'),
             prop: extractBool(sel, 'prop')
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
         };
 
     }
@@ -798,11 +705,7 @@
     function extractDeclarations(sel){
 
         var decs = {};
-<<<<<<< HEAD
-        var arr, arr2;
-=======
         var arr, urls;
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
 
         arr = decs.aliases = [];
         var aliases = sel.find("alias");
@@ -811,8 +714,6 @@
             arr.push(aliasDef);
         });
 
-<<<<<<< HEAD
-=======
         arr = decs.adapters = [];
         var adapters = sel.find("adapter");
         adapters.each(function(){
@@ -820,7 +721,6 @@
             arr.push(adapterDef);
         });
 
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
         arr = decs.valves = [];
         var valves = sel.find("valve");
         valves.each(function(){
@@ -835,16 +735,6 @@
             arr.push(dataDef);
         });
 
-<<<<<<< HEAD
-        arr = decs.configs = [];
-        var configs = sel.find("config");
-        configs.each(function(){
-            var configDef = extractConfigDef($(this));
-            arr.push(configDef);
-        });
-
-=======
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
         arr = decs.services = [];
         var services = sel.find("service");
         services.each(function(){
@@ -920,28 +810,18 @@
         var requires = sel.find("require");
         requires.each(function(){
             var requireDef = extractLibraryDef($(this));
-<<<<<<< HEAD
-            arr.push(requireDef);
-=======
             urls = requireDef.url;
             urls.forEach(function(url){
                 var tempDef = copyProps(requireDef, {});
                 tempDef.url = url;
                 arr.push(tempDef);
             });
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
         });
 
         arr = decs.requires;
         var hoists = sel.find("hoist,trait,wire,alloy");
         hoists.each(function(){
-<<<<<<< HEAD
-            var hoistDef = extractWireDef($(this));
-            hoistDef.isWire = true;
-            hoistDef.isAlloy = true;
-=======
             var hoistDef = extractAlloyDef($(this));
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
             arr.push(hoistDef);
         });
 
@@ -949,17 +829,12 @@
         var preloads = sel.find("preload");
         preloads.each(function(){
             var preloadDef = extractPreloadDef($(this));
-<<<<<<< HEAD
-            preloadDef.preload = preloadDef.isPreload = true;
-            arr.push(preloadDef);
-=======
             urls = preloadDef.url;
             urls.forEach(function(url){
                 var tempDef = copyProps(preloadDef, {});
                 tempDef.url = url;
                 arr.push(tempDef);
             });
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
         });
 
 
@@ -975,15 +850,9 @@
         this.aliasZone = null;
         this.origin = null; // hosting cog if this is an alloy
 
-<<<<<<< HEAD
-        this.isAlloy = false;
-        this.isChain = false;
-        this.isPinion = false;
-=======
         this.isAlloy = false; // hoisted cog defining behaviors or mixin style features
         this.isChain = false; // abstract cog that holds an array of cogs
         this.isPinion = false; // abstract cog with a dynamic url
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
 
         this.path = null; // local directory
         this.localSel = null;
@@ -993,10 +862,7 @@
         this.state = null;
         this.name = null;
         this.parent = null;
-<<<<<<< HEAD
-=======
         this.adapter = null;
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
         this.alloys = [];
         this.serviceMap = {};
         this.feedMap = {};
@@ -1006,10 +872,6 @@
         this.methodMap = {};
         this.childMap = {};
         this.webServiceMap = {};
-<<<<<<< HEAD
-        this.config = {};
-=======
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
         this.itemPlace = null;
         this.uid = ++uid;
         this.destroyed = false;
@@ -1123,24 +985,15 @@
         {name: 'properties', method: 'createProp'},
         {name: 'valves', method: 'createValve'},
         {name: 'aliases', method: 'createAlias'},
-<<<<<<< HEAD
-        {name: 'dataSources', method: 'createData'},
-        {name: 'commands', method: 'demandData'},
-        {name: 'configs', method: 'createConfig2'},
-=======
         {name: 'adapters', method: 'createAdapter'},
         {name: 'dataSources', method: 'createData'},
         {name: 'commands', method: 'demandData'},
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
         {name: 'services', method: 'createService'},
         {name: 'feeds', method: 'createFeed'},
         {name: 'methods', method: 'createMethod'}
 
-<<<<<<< HEAD
-=======
 
 
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
     ];
 
     MapItem.prototype._cogFirstBuildDeclarations = function(defs) {
@@ -1259,18 +1112,7 @@
     };
 
 
-<<<<<<< HEAD
-    MapItem.prototype.appendCog= function(def, config){
-
-        def.action = 'append';
-        this.createCog(def,undefined,config);
-
-    };
-
-    MapItem.prototype.createCog = function(def, placeholder, config){
-=======
     MapItem.prototype.createCog = function(def, placeholder){
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
 
         var self = this;
         var mi = new MapItem();
@@ -1278,39 +1120,25 @@
         mi.cogZone = def.isRoute ? self.cogZone.demandChild(def.name, def.isRoute) : self.cogZone.demandChild();
         mi.aliasZone = self.aliasZone.demandChild();
 
-<<<<<<< HEAD
-        mi.config = copyProps(config, {});
-=======
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
         mi.target = def.target;
         mi.action = def.action || 'append';
         mi.source = def.source;
         mi.sourceType = def.sourceType || 'prop';
         mi.item = def.item;
-<<<<<<< HEAD
-        mi.itemType = def.itemType || 'config';
-        mi.name = def.name;
-        mi.url =  def.url;
-        mi.urlType = def.urlType || 'string'; // s = string, c = config, d = data, p = prop
-=======
         mi.itemType = def.itemType;
         mi.name = def.name;
         mi.url =  def.url;
         mi.urlType = def.urlType || 'string'; // s = string, d = data, p = prop
 
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
 
         mi.path = (def.path) ? self._resolvePath(def.path) : null;
         mi.parent = self;
         mi.scriptData.mapItem = mi;
         self.childMap[mi.uid] = mi;
 
-<<<<<<< HEAD
-=======
         if(def.adapter)
             mi.adapter = this._resolveValueFromType(def.adapter, def.adapterType);
 
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
 
         if(mi.urlType !== 'data') {
 
@@ -1329,11 +1157,7 @@
             mi.isPinion = true;
             mi._requirementsLoaded = true;
             mi.targetSel = (mi.target) ? self.scriptData[mi.target] : self.localSel.last();
-<<<<<<< HEAD
-            mi.urlFromPlace = mi.findData(mi.url).on('update').change().as(mi).host(mi.uid).run(mi._cogControlUrl).autorun();
-=======
             mi.urlFromPlace = mi.cogZone.findData(mi.url).on('update').change().as(mi).host(mi.uid).run(mi._cogControlUrl).autorun();
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
 
         }
 
@@ -1378,10 +1202,6 @@
     };
 
 
-<<<<<<< HEAD
-// todo this is called an Alloy now
-=======
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
     MapItem.prototype.createAlloy = function(def) {
 
         // url must be cached/loaded at this point
@@ -1390,35 +1210,6 @@
         if(self.destroyed)
             return;
 
-<<<<<<< HEAD
-        var shaft = new MapItem();
-
-
-        //todo remove alias zones?
-        //shaft.cogZone = self.cogZone.demandChild();
-        shaft.cogZone = def.isRoute ? self.cogZone.demandChild(def.name, def.isRoute) : self.cogZone.demandChild();
-
-        shaft.aliasZone = self.aliasZone.demandChild();
-
-        shaft.origin = self; // cog that hosts this alloy
-        //shaft.library = url;
-        shaft.isAlloy = true;
-        shaft.name = def.name;
-        shaft.isRoute = def.isRoute;
-
-        // insert shaft between this cog and its parent
-        shaft.parent = self.parent;
-        shaft.parent.childMap[shaft.uid] = shaft;
-        delete self.parent.childMap[self.uid];
-        self.parent = shaft;
-        shaft.childMap[self.uid] = self;
-
-        self.cogZone.insertParent(shaft.cogZone);
-
-
-        shaft._cogAssignUrl(def.url);
-        shaft._cogBecomeUrl();
-=======
         var alloy = new MapItem();
 
         alloy.cogZone = def.isRoute ? self.cogZone.demandChild(def.name, def.isRoute) : self.cogZone.demandChild();
@@ -1446,7 +1237,6 @@
 
         alloy._cogAssignUrl(def.url);
         alloy._cogBecomeUrl();
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
 
     };
 
@@ -1501,9 +1291,6 @@
         if(!this.parent)
             return;
 
-<<<<<<< HEAD
-        this.sourceVal = this.parent._resolveValueFromType(this.source, this.sourceType);
-=======
         var outerCog = this.parent;
         while (outerCog.parent && outerCog.isAlloy){
             outerCog = outerCog.parent;
@@ -1513,7 +1300,6 @@
             this.origin._resolveValueFromType(this.source, this.sourceType) : // resolve from the declaring cog, not the parent
             outerCog._resolveValueFromType(this.source, this.sourceType);
 
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
         this.itemVal = this._resolveValueFromType(this.item, this.itemType, true);
 
         if(this.itemType === DATA)
@@ -1534,13 +1320,7 @@
                     this.itemVal.on('update').as(this).host(this.uid).run(this.scriptData.update).autorun();
             } else {
                 var d = this.sourceVal.read();
-<<<<<<< HEAD
-                if(this.itemType === CONFIG)
-                    this.createConfig(this.item, d);
-                else if(this.itemType === PROP)
-=======
                 if(this.itemType === PROP)
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
                     this.scriptData[this.item] = d; // todo add error check for prop collision
                 else
                     this.throwError('invalid itemType: ' + this.itemType);
@@ -1613,11 +1393,7 @@
             if(listItem) { // already exists
                 updating.push(listItem);
                 if(this.source) {
-<<<<<<< HEAD
-                    var existingData = listItem.findData(itemDataName);
-=======
                     var existingData = listItem.cogZone.findData(itemDataName);
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
                     existingData.write(d);
                 }
             } else {
@@ -1668,24 +1444,18 @@
     MapItem.prototype._cogBecomeUrl = function(){
 
         var mi = this;
-<<<<<<< HEAD
-=======
         if(mi.destroyed || !mi.parent || mi.parent.destroyed) return;
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
 
         var url = mi.resolvedUrl;
         var htmlSel = cacheMap[url];
 
         mi._declarationDefs = declarationMap[url];
 
-<<<<<<< HEAD
-=======
         var script = scriptMap[url] || defaultScriptDataPrototype;
 
         mi.scriptData = Object.create(script);
         mi.scriptData.mapItem = mi;
 
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
         if(mi.isAlloy)
             mi._cogInitialize();
         else {
@@ -1723,11 +1493,7 @@
         var libs = self._declarationDefs.requires;
         libs.forEach(function (def) {
             def.resolvedUrl = self._resolveUrl(def.url, def.path);
-<<<<<<< HEAD
-            self._cogAddRequirement(def.resolvedUrl, def.preload, def.name, def.isRoute);
-=======
             self._cogAddRequirement(def.resolvedUrl, def.preload, def.name, def.isRoute, def);
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
         });
 
         if(self.requirements.length == 0) {
@@ -1742,17 +1508,6 @@
     MapItem.prototype._cogInitialize = function(){
 
         var mi = this;
-<<<<<<< HEAD
-        if(mi.destroyed || !mi.parent || mi.parent.destroyed) return;
-
-        var url = mi.resolvedUrl;
-        var script = scriptMap[url] || defaultScriptDataPrototype;
-
-        //console.log("INIT:" + mi.uid + ":" + mi.resolvedUrl);
-
-        mi.scriptData = Object.create(script);
-        mi.scriptData.mapItem = mi;
-=======
         //if(mi.destroyed || !mi.parent || mi.parent.destroyed) return;
         //
         //var url = mi.resolvedUrl;
@@ -1760,7 +1515,6 @@
         //
         //mi.scriptData = Object.create(script);
         //mi.scriptData.mapItem = mi;
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
 
         if(!mi.isAlloy) {
             mi._generateDomIds();
@@ -1807,11 +1561,6 @@
 
     MapItem.prototype._cogRequirementReady = function(urlReady) {
 
-<<<<<<< HEAD
-        //console.log('just got:' + urlReady);
-
-=======
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
         var req, i, j;
         var self = this;
         var allReady = true; // assertion to disprove
@@ -1832,11 +1581,7 @@
                         var resolvedURL = self._resolveUrl(def.url, def.path);
                         if(self.requirementsSeen[resolvedURL])
                             continue;
-<<<<<<< HEAD
-                        newReq = createRequirement(resolvedURL, def.preload, urlReady, def.name, def.isRoute);
-=======
                         newReq = createRequirement(resolvedURL, def.preload, urlReady, def.name, def.isRoute, def);
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
                         newReqs.push(newReq);
                         self.requirementsSeen[resolvedURL] = newReq;
                     }
@@ -1880,15 +1625,10 @@
                     addScriptElement(scriptText);
                 }
             } else if(endsWith(url,".html")) {
-<<<<<<< HEAD
-                if(!req.preload)
-                    self.createAlloy(req);
-=======
                 if(!req.preload) {
                     req.def.url = req.url || req.def.url; // todo need to redo all the filedownloads and mgmt
                     self.createAlloy(req.def);
                 }
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
             }
         }
 
@@ -1908,14 +1648,6 @@
 
 
 
-<<<<<<< HEAD
-    function createRequirement(requirementUrl, preload, fromUrl, name, isRoute){
-        var urlPlace = bus.location("n-url:"+requirementUrl);
-        return {url: requirementUrl, fromUrl: fromUrl, place: urlPlace, preload: preload, name: name, isRoute: isRoute};
-    }
-
-    MapItem.prototype._cogAddRequirement = function(requirementUrl, preload, name, isRoute) {
-=======
     function createRequirement(requirementUrl, preload, fromUrl, name, isRoute, def){
         var urlPlace = bus.location("n-url:"+requirementUrl);
         return {url: requirementUrl, fromUrl: fromUrl, place: urlPlace, preload: preload, name: name, isRoute: isRoute, def:def};
@@ -1923,16 +1655,11 @@
 
     // this only adds global js lib requirements currently
     MapItem.prototype._cogAddRequirement = function(requirementUrl, preload, name, isRoute, def) {
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
 
         //console.log('add: '+ requirementUrl);
         var self = this;
         var urlPlace = bus.location("n-url:"+requirementUrl);
-<<<<<<< HEAD
-        var requirement = {url: requirementUrl, fromUrl: self.resolvedUrl, place: urlPlace, preload: preload, name: name, isRoute: isRoute};
-=======
         var requirement = {url: requirementUrl, fromUrl: self.resolvedUrl, place: urlPlace, preload: preload, name: name, isRoute: isRoute, def: def};
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
 
         self.requirements.push(requirement);
         self.requirementsSeen[requirement.url] = requirement;
@@ -1977,17 +1704,10 @@
         $.ajax({url: url + suffix, dataType: "text"})
             .done(function(response, status, xhr ){
 
-<<<<<<< HEAD
-               //console.log('got file:'+url);
-               urlPlace.write(response);
-
-               if (isHTML)
-=======
                 //console.log('got file:'+url);
                 urlPlace.write(response);
 
                 if (isHTML)
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
                     parseResponseHTML(response, url);
 
                 urlPlace.write({active: false, done: true}, "status");
@@ -2063,15 +1783,7 @@
     }
 
     function wrapScript(scriptText, url) {
-<<<<<<< HEAD
-
-        var website = 'http://cognition';//http://www.cognition.com/';
-        var wrapped =
-                scriptText + "\n//# sourceURL=" + website + url + "";
-        return wrapped;
-=======
         return scriptText + "\n//# sourceURL=http://cognition" + url + "";
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
     }
 
     function addScriptElement(scriptText) {
@@ -2079,13 +1791,8 @@
         var scriptEle = document.createElement("script");
         scriptEle.type = "text/javascript";
         scriptEle.text = scriptText;
-<<<<<<< HEAD
-        // todo add window.onerror global debug system for syntax errors in injected scripts
-        document.head.appendChild(scriptEle); // runs ndash.use(some_object) if html based;
-=======
         // todo add window.onerror global debug system for syntax errors in injected scripts?
         document.head.appendChild(scriptEle);
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
 
         scriptEle.parentNode.removeChild(scriptEle);
 
@@ -2165,11 +1872,7 @@
     MapItem.prototype._findPath = function(){
         var item = this;
         do{
-<<<<<<< HEAD
-            if(item.path)// && !item.library)
-=======
             if(item.path) // && !item.isAlloy)// && !item.library)
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
                 return item.path;
             item = item.parent;
         } while(item);
@@ -2186,10 +1889,6 @@
             data: 'dataMap',
             feed: 'feedMap',
             service: 'serviceMap',
-<<<<<<< HEAD
-            config: 'config',
-=======
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
             alias: 'aliasMap',
             method: 'methodMap'
         };
@@ -2200,24 +1899,15 @@
 
 
     MapItem.prototype.createAlias = function(def){
-<<<<<<< HEAD
-        //var this.aliasZone =
-        return this.aliasMap[def.name] = this._resolveUrl(def.url, def.path);
-=======
         var url = this.aliasMap[def.name] = this._resolveUrl(def.url, def.path);
         if(def.prop)
             this.exposeProp(def.name, url);
         return url;
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
     };
 
     MapItem.prototype.createValve = function(def){
 
-<<<<<<< HEAD
-        var valveMap = this.valveMap = this.valveMap || {dataMap: null, aliasMap: null, config: null}; // todo switch config to configMap
-=======
         var valveMap = this.valveMap = this.valveMap || {dataMap: null, aliasMap: null};
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
         var thingKey = def.thing + 'Map';
         var accessHash = valveMap[thingKey] = valveMap[thingKey] || {};
         for(var i = 0; i < def.allow.length; i++){
@@ -2291,12 +1981,6 @@
         var dataPlace;
         var pipePlace;
         var sensor;
-<<<<<<< HEAD
-        var actualPlaceNames = [];
-
-
-=======
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
 
         if(def.find){
 
@@ -2306,36 +1990,13 @@
 
         } else {
 
-<<<<<<< HEAD
-            // todo can rm this? -- checks for data good
-            //
-            //for (var i = 0; i < def.watch.length; i++) {
-            //    dataPlace = mi.find(def.watch[i], def.thing, def.where);
-            //    if (!def.optional && !dataPlace) {
-            //        mi.throwError("Could not build sensor: " + def.thing + ":" + def.watch[i] + ":" + def.where + " in " + mi.resolvedUrl);
-            //        return;
-            //    }
-            //    if (dataPlace)
-            //        actualPlaceNames.push(dataPlace._name);
-            //}
-
-            // todo make multiloc upfront and don't search names again
-            //if (actualPlaceNames.length === 0)
-            //    return null; // optional places not found
-
-=======
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
             dataPlace = mi.cogZone.findData(def.watch, def.where, def.optional);
 
             if(!dataPlace && def.optional)
                 return null;
 
             sensor = dataPlace.on(def.topic);
-<<<<<<< HEAD
-            //sensor = bus.location(actualPlaceNames).on(def.topic);
-=======
 
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
         }
 
         var context = mi.scriptData;
@@ -2363,13 +2024,8 @@
         var multiSensor = null;
         if(def.watch.length > 1) {
 
-<<<<<<< HEAD
-                multiSensor = sensor; // add source (multi to source) and grab() -- grab all data upstream in a merged
-                sensor = sensor.merge().on(def.topic).batch();
-=======
             multiSensor = sensor; // add source (multi to source) and grab() -- grab all data upstream in a merged
             sensor = sensor.merge().on(def.topic).batch();
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
 
         } else if(def.batch) {
             sensor.batch();
@@ -2405,19 +2061,6 @@
         if(def.gather && def.gather.length > 0)
             sensor.gather(def.gather);
 
-<<<<<<< HEAD
-        if(def.demand){
-            pipePlace = mi.demandData(def.demand); // todo move all this creation of data point into defs so creation order is same
-            mi.scriptData[def.demand] = pipePlace; // todo replace with exposeProp and check for existence, throw errors
-            sensor.pipe(pipePlace);
-        }
-        else if(def.pipe) {
-            pipePlace = mi._find(def.pipe, 'dataMap', def.pipeWhere);
-            sensor.pipe(pipePlace);
-        }
-
-        if(def.run && !def.demand && !def.pipe) {
-=======
         if(def.pipe) {
             pipePlace = mi.cogZone.findData(def.pipe, 'first', def.optional); // mi._find(def.pipe, 'dataMap', def.pipeWhere);
             if(pipePlace)
@@ -2429,7 +2072,6 @@
         }
 
         if(def.run && !def.toggle && !def.pipe) {
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
             var callback = context[def.run];
             sensor.run(callback);
         }
@@ -2451,12 +2093,6 @@
 
     };
 
-<<<<<<< HEAD
-
-
-
-=======
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
     MapItem.prototype.exposeProp = function(name, value){
         var mi = this;
         if(mi.scriptData[name])
@@ -2473,11 +2109,7 @@
         if(!prop && def.optional)
             return;
 
-<<<<<<< HEAD
-        if(prop === undefined && def.thing !== 'config') // todo force optional flag use for config too
-=======
         if(prop === undefined)
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
             mi.throwError("Could not build Prop: " + def.find + ":" + def.thing + ":" + def.where);
 
         if(mi.scriptData[def.name])
@@ -2494,43 +2126,15 @@
     };
 
     MapItem.prototype.findMethod = function(name, where){
-<<<<<<< HEAD
-            return this._find(name, 'methodMap', where);
-    };
-
-
-    //MapItem.prototype._find2 = function(name, map, where) {
-    //
-    //    if(map !== 'dataMap')
-    //        return this._find(name, map, where);
-    //
-    //    return this.cogZone.findData(name, where);
-    //};
-
-=======
         return this._find(name, 'methodMap', where);
     };
 
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
     MapItem.prototype._find = function(name, map, where, optional) {
 
 
         if(map === 'dataMap')
             return this.cogZone.findData(name, where, optional);
 
-<<<<<<< HEAD
-        where = where || FIRST; // options: local, first, outer, last
-
-        if(where === LOCAL)
-            return this._findLocal(name, map);
-        else if(where === FIRST)
-            return this._findFirst(name, map);
-        else if(where === OUTER)
-            return this._findOuter(name, map);
-        else if(where === LAST)
-            return this._findLast(name, map);
-        else if(where === PARENT)
-=======
         where = where || 'first'; // options: local, parent, first, outer, last
 
         if(where === 'local')
@@ -2542,7 +2146,6 @@
         else if(where === 'last')
             return this._findLast(name, map);
         else if(where === 'parent')
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
             return this._findFromParent(name, map);
         else
             throw new Error('Invalid option for [where]: ' + where);
@@ -2656,61 +2259,14 @@
         return this._find(name, 'dataMap', where, optional);
     };
 
-<<<<<<< HEAD
-    MapItem.prototype.findConfig = function(name, where){
-        return this._find(name, 'config', where);
-    };
-
-=======
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
     MapItem.prototype.findAlias = function(name, where){
         return this._find(name, 'aliasMap', where);
     };
 
     MapItem.prototype.demandData = function(name){
         return this.cogZone.demandData(name);
-<<<<<<< HEAD
-        //return this.findData(name, LOCAL) || this.createData({name: name});
     };
 
-    MapItem.prototype.createConfig = function(name, value){
-        this.config[name] = value;
-    };
-
-
-    MapItem.prototype.createConfig2 = function(def){
-
-        var self = this;
-        var name = def.name;
-        if(name.indexOf(":")!=-1)
-            self.throwError("Invalid config name: " + name);
-
-        var value = def.value;
-        var type = def.valueType;
-        var inherited = false;
-
-        if (def.inherit) {
-            value = self._find(name, 'config', 'first');
-            inherited = true;
-        }
-
-        if (!inherited || value === undefined)
-            value = this._resolveValueFromType(value, type);
-
-        if(def.prop){
-            if(self.scriptData[def.name])
-                self.throwError("Property already defined: " + def.name);
-            self.scriptData[def.name] = value;
-        }
-
-        this.config[name] = value; // todo become configMap
-
-        return value;
-    };
-=======
-    };
-
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
 
     MapItem.prototype._resolveValueFromType = function(value, type, demandIt){
 
@@ -2729,12 +2285,6 @@
         if(type === OBJECT)
             return (typeof value === 'object') ? value : null;
 
-<<<<<<< HEAD
-        if(type === CONFIG)
-            return this.findConfig(value); // todo add error if not found?
-
-=======
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
         if(type === DATA)
             return (demandIt) ? this.demandData(value) : this.findData(value);
 
@@ -2775,8 +2325,6 @@
         }
     };
 
-<<<<<<< HEAD
-=======
     MapItem.prototype.createAdapter = function(def){
 
         var z = this.cogZone;
@@ -2802,7 +2350,6 @@
 
     };
 
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
     MapItem.prototype.createData = function(def){
 
         var self = this;
@@ -2849,23 +2396,15 @@
             data.route();
         }
 
-<<<<<<< HEAD
-
-        data.initialize(value);
-=======
         data.initialize(value); // adapt after this?
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
 
         if(def.servicePresent || def.url) {
 
             var settings = def.servicePresent ? this._resolveValueFromType(def.service, def.serviceType) : {};
 
-<<<<<<< HEAD
-=======
             if(typeof settings === 'function')
                 settings = settings.call(this);
 
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
             settings.url = def.url || settings.url;
             settings.path = def.path || settings.path;
             settings.verb = def.verb || settings.verb || 'GET'; // || global default verb
@@ -2894,28 +2433,6 @@
     //  target : an optional opening target (a name, or "_blank"), defaults to "_self"
     MapItem.prototype.postToBlankWindow = function(url, data) {
 
-<<<<<<< HEAD
-            var form = document.createElement("form");
-            form.action = url;
-            form.method = 'POST';
-            form.target = '_blank';
-
-            if (data) {
-                for (var key in data) {
-                    var input = document.createElement("textarea");
-                    input.name = key;
-                    input.value = typeof data[key] === "object" ? JSON.stringify(data[key]) : data[key];
-                    form.appendChild(input);
-                }
-            }
-
-            form.style.display = 'none';
-            document.body.appendChild(form);
-            form.submit();
-            form.parentNode.removeChild(form);
-
-     };
-=======
         var form = document.createElement("form");
         form.action = url;
         form.method = 'POST';
@@ -2936,7 +2453,6 @@
         form.parentNode.removeChild(form);
 
     };
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
 
     var Service = function(){
 
@@ -3041,10 +2557,7 @@
 
     WebService.prototype.settings = function(settings) {
 
-<<<<<<< HEAD
-=======
 
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
         if(arguments.length==0)
             return this._settings; // todo copy and freeze object to avoid outside mods?
 
@@ -3118,10 +2631,7 @@
         self.abort(); // this should not be needed, possible sanity check
 
         self._location.write(self._settings, 'request');
-<<<<<<< HEAD
-=======
         self._location.write('busy', 'condition');
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
 
         var settings = {};
 
@@ -3137,10 +2647,7 @@
                 self._location.write(response, 'done');
                 self._location.write(response, 'always');
                 self._location.write(status, 'status');
-<<<<<<< HEAD
-=======
                 self._location.write('done', 'condition');
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
 
             })
             .fail(function(xhr, status, error){
@@ -3148,10 +2655,7 @@
                 self._location.write(error, 'error');
                 self._location.write(error, 'always');
                 self._location.write(status, 'status');
-<<<<<<< HEAD
-=======
                 self._location.write('error', 'condition');
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
 
             })
         ;
@@ -3201,11 +2705,7 @@
         return this._feedPlace.on(name);
     };
 
-<<<<<<< HEAD
-    // TODO feed cache with array and hashmap to make history size
-=======
 
->>>>>>> a6097fa6f6a98c52a884170e19a9bfa5331755c9
 
     Feed.prototype.to = Feed.prototype.data = function(dataPlace){
         if(arguments.length==0) return this._dataPlace;
