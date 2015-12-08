@@ -23,9 +23,3 @@ help, too if you ask nice.
 ## The Basics
 
 _We're working on actual docs, promise._ Two minutes, Turkish.
-
-### Cogs
-
-Each `.html` file in the project's src tree is one component, or cog.
-
-
