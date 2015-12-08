@@ -1,7 +1,7 @@
 ;(function($) {
 
     /**
-     * cognition.js (v1.0.14-downloading)
+     * cognition.js (v1.0.16-adapting)
      *
      * Copyright (c) 2015 Scott Southworth, Landon Barnickle, Nick Lorenson & Contributors
      *
@@ -422,8 +422,18 @@
         var d =  {
             name: extractString(sel, 'name'),
             control: extractBool(sel, 'control'),
-            prop: extractBool(sel, 'prop')
+            optional: extractBool(sel, 'optional'),
+            field: extractString(sel, 'field'),
+            fieldType: null,
+            item: extractString(sel, 'item')
+            // todo -- add dynamic adapter that rewires?
         };
+
+        d.name = d.name || d.field;
+        d.field = d.field || d.name;
+
+        applyFieldType(d, 'field', STRING);
+
 
         return d;
     }
@@ -1281,10 +1291,14 @@
         if(!this.parent)
             return;
 
+        var outerCog = this.parent;
+        while (outerCog.parent && outerCog.isAlloy){
+            outerCog = outerCog.parent;
+        }
 
         this.sourceVal = (this.sourceType !== DATA && this.isAlloy) ?
             this.origin._resolveValueFromType(this.source, this.sourceType) : // resolve from the declaring cog, not the parent
-            this.parent._resolveValueFromType(this.source, this.sourceType);
+            outerCog._resolveValueFromType(this.source, this.sourceType);
 
         this.itemVal = this._resolveValueFromType(this.item, this.itemType, true);
 
@@ -1858,7 +1872,7 @@
     MapItem.prototype._findPath = function(){
         var item = this;
         do{
-            if(item.path)// && !item.library)
+            if(item.path) // && !item.isAlloy)// && !item.library)
                 return item.path;
             item = item.parent;
         } while(item);
@@ -2314,18 +2328,24 @@
     MapItem.prototype.createAdapter = function(def){
 
         var z = this.cogZone;
-        var itemName = this.parent.isChain ? this.parent.item : this.item; // todo look up why diff on chains - need pinion check?
-        var options = z.findData(itemName).read(); // todo add error crap if this stuff fails
-        var externalName = options[def.name];
-        var externalData = z.findData(externalName, 'parent', def.optional); // name of data point to follow or control
         var data = z.demandData(def.name); // local data point
+        var itemName = def.item || (this.parent.isChain ? this.parent.item : this.item); // todo look up why diff on chains - need alloy skip? need pinion check?
+        var options = z.findData(itemName).read(); // todo add error crap if this stuff fails
+
+        var fieldName = this._resolveValueFromType(def.field, def.fieldType);
+        var externalName = options[fieldName];
+
+        if(!externalName && def.optional) return;
+
+        var externalData = z.findData(externalName, 'parent', def.optional); // name of data point to follow or control
 
         if(!externalData) return;
 
+
         if(def.control){
-            data.on('update').pipe(externalData);
+            data.on('*').pipe(externalData);
         } else {
-            externalData.on('update').pipe(data).autorun();
+            externalData.on('*').pipe(data).autorun();
         }
 
     };
@@ -2611,6 +2631,7 @@
         self.abort(); // this should not be needed, possible sanity check
 
         self._location.write(self._settings, 'request');
+        self._location.write('busy', 'condition');
 
         var settings = {};
 
@@ -2626,6 +2647,7 @@
                 self._location.write(response, 'done');
                 self._location.write(response, 'always');
                 self._location.write(status, 'status');
+                self._location.write('done', 'condition');
 
             })
             .fail(function(xhr, status, error){
@@ -2633,6 +2655,7 @@
                 self._location.write(error, 'error');
                 self._location.write(error, 'always');
                 self._location.write(status, 'status');
+                self._location.write('error', 'condition');
 
             })
         ;
