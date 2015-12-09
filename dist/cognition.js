@@ -1,7 +1,7 @@
 ;(function($) {
 
     /**
-     * cognition.js (v1.0.16-adapting)
+     * cognition.js (v1.0.18-in alloy with network abort fix)
      *
      * Copyright (c) 2015 Scott Southworth, Landon Barnickle, Nick Lorenson & Contributors
      *
@@ -1117,7 +1117,7 @@
         var self = this;
         var mi = new MapItem();
 
-        mi.cogZone = def.isRoute ? self.cogZone.demandChild(def.name, def.isRoute) : self.cogZone.demandChild();
+        mi.cogZone = def.isRoute ? self.cogZone.demandChild(def.name, def.isRoute) : self.cogZone.demandChild(def.name);
         mi.aliasZone = self.aliasZone.demandChild();
 
         mi.target = def.target;
@@ -1212,7 +1212,7 @@
 
         var alloy = new MapItem();
 
-        alloy.cogZone = def.isRoute ? self.cogZone.demandChild(def.name, def.isRoute) : self.cogZone.demandChild();
+        alloy.cogZone = def.isRoute ? self.cogZone.demandChild(def.name, def.isRoute) : self.cogZone.demandChild(def.name);
         alloy.aliasZone = self.aliasZone.demandChild();
 
         alloy.origin = self; // cog that hosts this alloy
@@ -2592,7 +2592,7 @@
 
     WebService.prototype.isActive = function(){
 
-        return self._xhr && self._xhr.readyState && self._xhr.readyState != 4;
+        return this._xhr && this._xhr.readyState && this._xhr.readyState != 4;
 
     };
 
