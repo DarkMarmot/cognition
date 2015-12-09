@@ -1,6 +1,6 @@
 {
   "name": "cognition-framework",
-  "version": "1.0.16",
+  "version": "1.0.17",
   "description": "Cogntion JS SPA framework",
   "main": "dist/cognition.js",
   "directories": {
