@@ -2,7 +2,7 @@ const g       = require("gulp-load-plugins")()
     , gulp    = require("gulp")
 
 const paths = {
-    src: "cognition.js",
+    src: "src/cognition.js",
     dist: "dist"
 }
 
