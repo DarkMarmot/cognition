@@ -1,6 +1,6 @@
 {
   "name": "cognition-framework",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "Cogntion JS SPA framework",
   "main": "dist/catbus.js",
   "directories": {
