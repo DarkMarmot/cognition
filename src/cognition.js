@@ -1,9 +1,9 @@
 ;(function($) {
 
     /**
-     * cognition.js (v1.0.6)
+     * cognition.js (v1.0.19-pipe where)
      *
-     * Copyright (c) 2015 Scott Southworth, Landon Barnickle & Contributors
+     * Copyright (c) 2015 Scott Southworth, Landon Barnickle, Nick Lorenson & Contributors
      *
      * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
      * file except in compliance with the License. You may obtain a copy of the License at:
@@ -14,12 +14,13 @@
      * ANY KIND, either express or implied. See the License for the specific language
      * governing permissions and limitations under the License.
      *
-     * @authors Scott Southworth @DarkMarmot, Landon Barnickle @landonbar
+     * @authors Scott Southworth @darkmarmot, Landon Barnickle @landonbar, Nick Lorenson @enlore
      *
      */
+
     "use strict";
-    var ndash = $.ndash = $.cognition = {};
-    var bus = ndash.bus = $.catbus = catbus;
+    var cognition = $.cognition = {};
+    var bus = $.catbus = catbus;
     var uid = 0;
 
     var COG_ROOT = bus.demandTree('COG_ROOT');
@@ -27,24 +28,11 @@
 
     var buildNum = 'NEED_BUILD_NUM';
 
-    var sessionTimestamp = Date.now();
-    var DEBUG = true;
-
-    // common options list
-    var LOCAL = 'local';
-    var OUTER = 'outer';
-    var PARENT = 'parent';
-    var FIRST = 'first';
-    var LAST  = 'last';
-    var ALL = 'all';
-    var NONE = 'none';
-
     // cognition data types
 
     var DATA = 'data';
     var NUMBER = 'number';
     var PROP = 'prop';
-    var CONFIG = 'config';
     var FEED = 'feed';
     var SERVICE = 'service';
     var STRING = 'string';
@@ -61,8 +49,6 @@
         num: NUMBER,
         number: NUMBER,
         prop: PROP,
-        c: CONFIG,
-        config: CONFIG,
         bool: BOOLEAN,
         boolean: BOOLEAN,
         string: STRING,
@@ -72,12 +58,11 @@
 
     };
 
-    ndash.buildNum = function(n){
+    cognition.buildNum = function(n){
         if(arguments.length == 0) return buildNum;
         buildNum = n;
-        return ndash;
+        return cognition;
     };
-
 
 
     var defaultScriptDataPrototype = {
@@ -100,44 +85,16 @@
 
     };
 
-    function getNextUid(){ return ++uid;}
-
     var activeScriptData = null;
     var activeProcessURL = null;
-
 
     var contentMap = {}; // layout map, built from n-item hierarchy
     var cacheMap = {}; // cache of content url loads
     var declarationMap = {}; // arrays of strategy directives
     var libraryMap = {}; // by resolvedUrl, javascript files processed (don't run again)
 
-    var requestMap = {}; // active content url requests
     var scriptMap = {}; // prototypes
 
-
-    var cogDownloadMap = {}; // data locations by url, store true when file downloaded
-    var cogDependenciesMap = {}; // data locations by url, store true when dependencies downloaded
-
-    // sensors track dependencies and write true when complete
-
-    function downloadCog(resolvedUrl){
-
-        if(cogDownloadMap[resolvedUrl])
-            return; // already done or in process
-
-        tryToDownload(resolvedUrl);
-
-        var cogDownloadStatus = cogDownloadMap[resolvedUrl] = bus.location("n-cog:" + resolvedUrl);
-        var fileStatus = bus.location("n-url:" + resolvedUrl);
-        fileStatus.on('done').transform(true).pipe(cogDownloadStatus).once().autorun();
-
-    }
-
-    ndash._contentMap = contentMap;
-    ndash._cacheMap = cacheMap;
-    ndash._declarationMap = declarationMap;
-
-    ndash.masterId = 0;
 
     var webServiceDefaults = {
 
@@ -146,9 +103,6 @@
 
     };
 
-    function log(postcard){
-        //console.log(postcard.topic + ":" + postcard.msg);
-    }
 
     function destroyInnerMapItems(into){
         for(var k in into.childMap){
@@ -159,7 +113,7 @@
     }
 
 
-    $.cog = ndash.use = function(scriptData){
+    $.cog = function(scriptData){
         activeScriptData = scriptData;
         // add default methods to this nascent prototype if not present
         $.each(defaultScriptDataPrototype, function(name, func){
@@ -168,9 +122,9 @@
         });
     };
 
-    ndash.init = function (sel, url, debugUrl){
+    cognition.init = function (sel, url, debugUrl){
 
-        var root = ndash.root = new MapItem();
+        var root = cognition.root = new MapItem();
         root.aliasZone = ALIAS_ROOT;
         root.cogZone = COG_ROOT;
 
@@ -225,9 +179,9 @@
         var stored = contentMap[mapItem.uid];
         if(stored === mapItem) {
             delete contentMap[mapItem.uid];
-           // console.log("destroyed " + mapItem.uid);
+            // console.log("destroyed " + mapItem.uid);
         }
-      //  if (DEBUG) //console.log("DESTROYED:"+mapItem.uid+":"+mapItem.path);
+
     }
 
 
@@ -305,6 +259,7 @@
 
             name: extractString(sel, 'name'),
             pipe: extractString(sel, 'pipe'),
+            toggle: extractString(sel, 'toggle'),
             filter: extractString(sel, 'filter'),
             topic: extractString(sel, 'on', 'update'),
             run: extractString(sel, 'run'),
@@ -369,12 +324,12 @@
             data: extractString(sel, 'data'),
             find: extractString(sel, 'id,find,node'), // todo switch all to id
             optional: extractBool(sel, 'optional'),
-            subs: null,
-            where: extractString(sel, 'where', 'first'),
+            where: extractString(sel, 'from,where', 'first'),
+            pipeWhere: extractString(sel, 'to', 'first'),
             thing: extractString(sel, 'is', 'data'), // data, feed, service
             pipe: extractString(sel, 'pipe'),
+            toggle: extractString(sel, 'toggle'),
             demand: extractString(sel, 'demand'),
-            pipeWhere: extractString(sel, 'pipeWhere', 'first'), // first, last, local, outer -- todo switch to prop based
             filter: extractString(sel, 'filter'),
             topic: extractString(sel, 'for,on,topic', 'update'),
             run: extractString(sel, 'run'),
@@ -382,7 +337,10 @@
             emitPresent: extractHasAttr(sel, 'emit'),
             emitType: null,
             once: extractBool(sel, 'once'),
-            retain: extractBool(sel, 'retain'),
+            retain: extractBool(sel, 'retain'), // opposite of forget, now the default
+            forget: extractBool(sel, 'forget'), // doesn't retain group hash values from prior flush events
+            fresh: extractBool(sel, 'fresh'), // send only fresh, new values (does not autorun with preexisting data)
+            separate: extractBool(sel, 'separate'), // turns off automatic batching and grouping
             group: extractBool(sel, 'group'),
             change: extractBool(sel, 'change,distinct,skipDupes', false),
             extract: extractString(sel, 'extract'),
@@ -423,12 +381,13 @@
             }
         }
 
-        if(!d.find && !d.cmd) // && d.watch.length > 0)
+        if(!d.find && !d.cmd && !d.fresh) // && d.watch.length > 0)
             d.autorun = true;
 
-        d.batch = d.batch || (d.watch.length > 1); // todo -- allow multiples without batching?
+        d.batch = !d.separate && (d.batch || (d.watch.length > 1));
         d.group = d.batch; // todo make new things to avoid grouping and batching with positive statements
         d.retain = d.group;
+
 
         applyFieldType(d, 'transform', PROP);
         applyFieldType(d, 'emit', STRING);
@@ -463,6 +422,28 @@
         };
     }
 
+    function extractAdapterDef(sel){
+
+        var d =  {
+            name: extractString(sel, 'name'),
+            control: extractBool(sel, 'control'),
+            optional: extractBool(sel, 'optional'),
+            field: extractString(sel, 'field'),
+            fieldType: null,
+            item: extractString(sel, 'item')
+            // todo -- add dynamic adapter that rewires?
+        };
+
+        d.name = d.name || d.field;
+        d.field = d.field || d.name;
+
+        applyFieldType(d, 'field', STRING);
+
+
+        return d;
+    }
+
+
     function extractValveDef(sel){
         return {
             allow: extractStringArray(sel, 'allow'),
@@ -472,44 +453,52 @@
 
     function extractLibraryDef(sel){
         return {
-            url: extractString(sel, 'url'),
+            name: null,
+            url: extractStringArray(sel, 'url'),
             path: extractString(sel, 'path'),
-            isLibrary: true
+            isRoute: false,
+            isAlloy: false,
+            isLibrary: true,
+            isPreload: false,
+            preload: false
         };
     }
 
     function extractPreloadDef(sel){
         return {
-            url: extractString(sel, 'url'),
+            name: null,
+            url: extractStringArray(sel, 'url'),
             path: extractString(sel, 'path'),
+            isRoute: false,
+            isAlloy: false,
+            isLibrary: false,
             isPreload: true,
             preload: true
         };
     }
 
-    function extractWireDef(sel){
-        return {
+    function extractAlloyDef(sel){
+
+        var d = {
             url: extractString(sel, 'url'),
             path: extractString(sel, 'path'),
             name: extractString(sel, 'name'),
             isRoute: extractBool(sel, 'route'),
-            isWire: true
-        };
-    }
-
-    function extractAlloyDef(sel){
-
-        var def = {
-            name: extractString(sel, 'name'),
-            isRoute: extractBool(sel, "route"),
-            url: extractString(sel, 'url'),
-            path: extractString(sel, 'path'),
-            isAlloy: true
+            source: extractString(sel, 'source'),
+            item: extractString(sel, 'item','itemData'),
+            isAlloy: true,
+            isLibrary: false,
+            isPreload: false,
+            preload: false
         };
 
-        return def;
+        applyFieldType(d,'source', DATA);
+        applyFieldType(d,'item', DATA);
 
+        return d;
     }
+
+
 
 
     function extractServiceDef(sel){
@@ -612,6 +601,42 @@
             inherit: extractBool(sel, 'inherit'),
             isRoute: extractBool(sel, 'route'),
             value: extractString(sel, 'value'),
+            valuePresent: extractHasAttr(sel, 'value'),
+            valueType: null,
+            adapt: extractString(sel, 'adapt'),
+            adaptType: null,
+            adaptPresent: extractHasAttr(sel, 'adapt'),
+            service: extractString(sel, 'service'),
+            serviceType: null,
+            servicePresent: extractHasAttr(sel, 'service'),
+            params: extractString(sel, 'params'),
+            paramsType: null,
+            paramsPresent: extractHasAttr(sel, 'params'),
+            url: extractString(sel, 'url'),
+            path: extractString(sel, 'path'),
+            verb: extractString(sel, 'verb'),
+            prop: extractBool(sel, 'prop'),
+            request: extractBool(sel, 'req,request', false) // todo support data loc sensored, if object then acts as params in request
+        };
+
+        applyFieldType(d, 'value');
+        applyFieldType(d, 'params', PROP);
+        applyFieldType(d, 'service');
+        applyFieldType(d, 'adapt', PROP);
+
+        return d;
+
+    }
+
+
+    function extractNetDef(sel){
+
+        var d = {
+            name: extractString(sel, 'name'),
+            inherit: extractBool(sel, 'inherit'),
+            isRoute: extractBool(sel, 'route'),
+            value: extractString(sel, 'value'),
+            valuePresent: extractHasAttr(sel, 'value'),
             valueType: null,
             adapt: extractString(sel, 'adapt'),
             adaptType: null,
@@ -692,29 +717,13 @@
 
     }
 
-    function extractConfigDef(sel){
-
-        var d = {
-            name: extractString(sel, 'name'),
-            inherit: extractBool(sel, 'inherit'),
-            value: extractString(sel, 'value'),
-            valueType: null,
-            prop: extractBool(sel, 'prop')
-        };
-
-        applyFieldType(d, 'value');
-
-
-        return d;
-
-    }
-
     function extractAliasDef(sel){
 
         return {
             name: extractString(sel, 'name'),
             path: extractString(sel, 'path'),
-            url: extractString(sel, 'url')
+            url: extractString(sel, 'url'),
+            prop: extractBool(sel, 'prop')
         };
 
     }
@@ -736,13 +745,20 @@
     function extractDeclarations(sel){
 
         var decs = {};
-        var arr, arr2;
+        var arr, urls;
 
         arr = decs.aliases = [];
         var aliases = sel.find("alias");
         aliases.each(function(){
             var aliasDef = extractAliasDef($(this));
             arr.push(aliasDef);
+        });
+
+        arr = decs.adapters = [];
+        var adapters = sel.find("adapter");
+        adapters.each(function(){
+            var adapterDef = extractAdapterDef($(this));
+            arr.push(adapterDef);
         });
 
         arr = decs.valves = [];
@@ -759,12 +775,12 @@
             arr.push(dataDef);
         });
 
-        arr = decs.configs = [];
-        var configs = sel.find("config");
-        configs.each(function(){
-            var configDef = extractConfigDef($(this));
-            arr.push(configDef);
+        var nets = sel.find("net");
+        nets.each(function(){
+            var netDef = extractNetDef($(this));
+            arr.push(netDef);
         });
+
 
         arr = decs.services = [];
         var services = sel.find("service");
@@ -841,15 +857,18 @@
         var requires = sel.find("require");
         requires.each(function(){
             var requireDef = extractLibraryDef($(this));
-            arr.push(requireDef);
+            urls = requireDef.url;
+            urls.forEach(function(url){
+                var tempDef = copyProps(requireDef, {});
+                tempDef.url = url;
+                arr.push(tempDef);
+            });
         });
 
         arr = decs.requires;
         var hoists = sel.find("hoist,trait,wire,alloy");
         hoists.each(function(){
-            var hoistDef = extractWireDef($(this));
-            hoistDef.isWire = true;
-            hoistDef.isAlloy = true;
+            var hoistDef = extractAlloyDef($(this));
             arr.push(hoistDef);
         });
 
@@ -857,8 +876,12 @@
         var preloads = sel.find("preload");
         preloads.each(function(){
             var preloadDef = extractPreloadDef($(this));
-            preloadDef.preload = preloadDef.isPreload = true;
-            arr.push(preloadDef);
+            urls = preloadDef.url;
+            urls.forEach(function(url){
+                var tempDef = copyProps(preloadDef, {});
+                tempDef.url = url;
+                arr.push(tempDef);
+            });
         });
 
 
@@ -874,9 +897,9 @@
         this.aliasZone = null;
         this.origin = null; // hosting cog if this is an alloy
 
-        this.isAlloy = false;
-        this.isChain = false;
-        this.isPinion = false;
+        this.isAlloy = false; // hoisted cog defining behaviors or mixin style features
+        this.isChain = false; // abstract cog that holds an array of cogs
+        this.isPinion = false; // abstract cog with a dynamic url
 
         this.path = null; // local directory
         this.localSel = null;
@@ -886,6 +909,7 @@
         this.state = null;
         this.name = null;
         this.parent = null;
+        this.adapter = null;
         this.alloys = [];
         this.serviceMap = {};
         this.feedMap = {};
@@ -895,7 +919,6 @@
         this.methodMap = {};
         this.childMap = {};
         this.webServiceMap = {};
-        this.config = {};
         this.itemPlace = null;
         this.uid = ++uid;
         this.destroyed = false;
@@ -1009,12 +1032,14 @@
         {name: 'properties', method: 'createProp'},
         {name: 'valves', method: 'createValve'},
         {name: 'aliases', method: 'createAlias'},
+        {name: 'adapters', method: 'createAdapter'},
         {name: 'dataSources', method: 'createData'},
         {name: 'commands', method: 'demandData'},
-        {name: 'configs', method: 'createConfig2'},
         {name: 'services', method: 'createService'},
         {name: 'feeds', method: 'createFeed'},
         {name: 'methods', method: 'createMethod'}
+
+
 
     ];
 
@@ -1134,36 +1159,32 @@
     };
 
 
-    MapItem.prototype.appendCog= function(def, config){
-
-        def.action = 'append';
-        this.createCog(def,undefined,config);
-
-    };
-
-    MapItem.prototype.createCog = function(def, placeholder, config){
+    MapItem.prototype.createCog = function(def, placeholder){
 
         var self = this;
         var mi = new MapItem();
 
-        mi.cogZone = def.isRoute ? self.cogZone.demandChild(def.name, def.isRoute) : self.cogZone.demandChild();
+        mi.cogZone = def.isRoute ? self.cogZone.demandChild(def.name, def.isRoute) : self.cogZone.demandChild(def.name);
         mi.aliasZone = self.aliasZone.demandChild();
 
-        mi.config = copyProps(config, {});
         mi.target = def.target;
         mi.action = def.action || 'append';
         mi.source = def.source;
         mi.sourceType = def.sourceType || 'prop';
         mi.item = def.item;
-        mi.itemType = def.itemType || 'config';
+        mi.itemType = def.itemType;
         mi.name = def.name;
         mi.url =  def.url;
-        mi.urlType = def.urlType || 'string'; // s = string, c = config, d = data, p = prop
+        mi.urlType = def.urlType || 'string'; // s = string, d = data, p = prop
+
 
         mi.path = (def.path) ? self._resolvePath(def.path) : null;
         mi.parent = self;
         mi.scriptData.mapItem = mi;
         self.childMap[mi.uid] = mi;
+
+        if(def.adapter)
+            mi.adapter = this._resolveValueFromType(def.adapter, def.adapterType);
 
 
         if(mi.urlType !== 'data') {
@@ -1183,7 +1204,7 @@
             mi.isPinion = true;
             mi._requirementsLoaded = true;
             mi.targetSel = (mi.target) ? self.scriptData[mi.target] : self.localSel.last();
-            mi.urlFromPlace = mi.findData(mi.url).on('update').change().as(mi).host(mi.uid).run(mi._cogControlUrl).autorun();
+            mi.urlFromPlace = mi.cogZone.findData(mi.url).on('update').change().as(mi).host(mi.uid).run(mi._cogControlUrl).autorun();
 
         }
 
@@ -1228,7 +1249,6 @@
     };
 
 
-// todo this is called an Alloy now
     MapItem.prototype.createAlloy = function(def) {
 
         // url must be cached/loaded at this point
@@ -1237,33 +1257,33 @@
         if(self.destroyed)
             return;
 
-        var shaft = new MapItem();
+        var alloy = new MapItem();
 
+        alloy.cogZone = def.isRoute ? self.cogZone.demandChild(def.name, def.isRoute) : self.cogZone.demandChild(def.name);
+        alloy.aliasZone = self.aliasZone.demandChild();
 
-        //todo remove alias zones?
-        //shaft.cogZone = self.cogZone.demandChild();
-        shaft.cogZone = def.isRoute ? self.cogZone.demandChild(def.name, def.isRoute) : self.cogZone.demandChild();
+        alloy.origin = self; // cog that hosts this alloy
+        alloy.isAlloy = true;
+        alloy.name = def.name;
+        alloy.isRoute = def.isRoute;
 
-        shaft.aliasZone = self.aliasZone.demandChild();
+        alloy.source = def.source;
+        alloy.sourceType = def.sourceType || 'prop';
+        alloy.item = def.item;
+        alloy.itemType = def.itemType;
 
-        shaft.origin = self; // cog that hosts this alloy
-        //shaft.library = url;
-        shaft.isAlloy = true;
-        shaft.name = def.name;
-        shaft.isRoute = def.isRoute;
-
-        // insert shaft between this cog and its parent
-        shaft.parent = self.parent;
-        shaft.parent.childMap[shaft.uid] = shaft;
+        // insert alloy between this cog and its parent
+        alloy.parent = self.parent;
+        alloy.parent.childMap[alloy.uid] = alloy;
         delete self.parent.childMap[self.uid];
-        self.parent = shaft;
-        shaft.childMap[self.uid] = self;
+        self.parent = alloy;
+        alloy.childMap[self.uid] = self;
 
-        self.cogZone.insertParent(shaft.cogZone);
+        self.cogZone.insertParent(alloy.cogZone);
+        self.aliasZone.insertParent(alloy.aliasZone);
 
-
-        shaft._cogAssignUrl(def.url);
-        shaft._cogBecomeUrl();
+        alloy._cogAssignUrl(def.url);
+        alloy._cogBecomeUrl();
 
     };
 
@@ -1318,7 +1338,15 @@
         if(!this.parent)
             return;
 
-        this.sourceVal = this.parent._resolveValueFromType(this.source, this.sourceType);
+        var outerCog = this.parent;
+        while (outerCog.parent && outerCog.isAlloy){
+            outerCog = outerCog.parent;
+        }
+
+        this.sourceVal = (this.sourceType !== DATA && this.isAlloy) ?
+            this.origin._resolveValueFromType(this.source, this.sourceType) : // resolve from the declaring cog, not the parent
+            outerCog._resolveValueFromType(this.source, this.sourceType);
+
         this.itemVal = this._resolveValueFromType(this.item, this.itemType, true);
 
         if(this.itemType === DATA)
@@ -1339,9 +1367,7 @@
                     this.itemVal.on('update').as(this).host(this.uid).run(this.scriptData.update).autorun();
             } else {
                 var d = this.sourceVal.read();
-                if(this.itemType === CONFIG)
-                    this.createConfig(this.item, d);
-                else if(this.itemType === PROP)
+                if(this.itemType === PROP)
                     this.scriptData[this.item] = d; // todo add error check for prop collision
                 else
                     this.throwError('invalid itemType: ' + this.itemType);
@@ -1414,7 +1440,7 @@
             if(listItem) { // already exists
                 updating.push(listItem);
                 if(this.source) {
-                    var existingData = listItem.findData(itemDataName);
+                    var existingData = listItem.cogZone.findData(itemDataName);
                     existingData.write(d);
                 }
             } else {
@@ -1465,11 +1491,17 @@
     MapItem.prototype._cogBecomeUrl = function(){
 
         var mi = this;
+        if(mi.destroyed || !mi.parent || mi.parent.destroyed) return;
 
         var url = mi.resolvedUrl;
         var htmlSel = cacheMap[url];
 
         mi._declarationDefs = declarationMap[url];
+
+        var script = scriptMap[url] || defaultScriptDataPrototype;
+
+        mi.scriptData = Object.create(script);
+        mi.scriptData.mapItem = mi;
 
         if(mi.isAlloy)
             mi._cogInitialize();
@@ -1508,7 +1540,7 @@
         var libs = self._declarationDefs.requires;
         libs.forEach(function (def) {
             def.resolvedUrl = self._resolveUrl(def.url, def.path);
-            self._cogAddRequirement(def.resolvedUrl, def.preload, def.name, def.isRoute);
+            self._cogAddRequirement(def.resolvedUrl, def.preload, def.name, def.isRoute, def);
         });
 
         if(self.requirements.length == 0) {
@@ -1523,15 +1555,13 @@
     MapItem.prototype._cogInitialize = function(){
 
         var mi = this;
-        if(mi.destroyed || !mi.parent || mi.parent.destroyed) return;
-
-        var url = mi.resolvedUrl;
-        var script = scriptMap[url] || defaultScriptDataPrototype;
-
-        //console.log("INIT:" + mi.uid + ":" + mi.resolvedUrl);
-
-        mi.scriptData = Object.create(script);
-        mi.scriptData.mapItem = mi;
+        //if(mi.destroyed || !mi.parent || mi.parent.destroyed) return;
+        //
+        //var url = mi.resolvedUrl;
+        //var script = scriptMap[url] || defaultScriptDataPrototype;
+        //
+        //mi.scriptData = Object.create(script);
+        //mi.scriptData.mapItem = mi;
 
         if(!mi.isAlloy) {
             mi._generateDomIds();
@@ -1578,8 +1608,6 @@
 
     MapItem.prototype._cogRequirementReady = function(urlReady) {
 
-        //console.log('just got:' + urlReady);
-
         var req, i, j;
         var self = this;
         var allReady = true; // assertion to disprove
@@ -1600,7 +1628,7 @@
                         var resolvedURL = self._resolveUrl(def.url, def.path);
                         if(self.requirementsSeen[resolvedURL])
                             continue;
-                        newReq = createRequirement(resolvedURL, def.preload, urlReady, def.name, def.isRoute);
+                        newReq = createRequirement(resolvedURL, def.preload, urlReady, def.name, def.isRoute, def);
                         newReqs.push(newReq);
                         self.requirementsSeen[resolvedURL] = newReq;
                     }
@@ -1644,8 +1672,10 @@
                     addScriptElement(scriptText);
                 }
             } else if(endsWith(url,".html")) {
-                if(!req.preload)
-                    self.createAlloy(req);
+                if(!req.preload) {
+                    req.def.url = req.url || req.def.url; // todo need to redo all the filedownloads and mgmt
+                    self.createAlloy(req.def);
+                }
             }
         }
 
@@ -1665,17 +1695,18 @@
 
 
 
-    function createRequirement(requirementUrl, preload, fromUrl, name, isRoute){
+    function createRequirement(requirementUrl, preload, fromUrl, name, isRoute, def){
         var urlPlace = bus.location("n-url:"+requirementUrl);
-        return {url: requirementUrl, fromUrl: fromUrl, place: urlPlace, preload: preload, name: name, isRoute: isRoute};
+        return {url: requirementUrl, fromUrl: fromUrl, place: urlPlace, preload: preload, name: name, isRoute: isRoute, def:def};
     }
 
-    MapItem.prototype._cogAddRequirement = function(requirementUrl, preload, name, isRoute) {
+    // this only adds global js lib requirements currently
+    MapItem.prototype._cogAddRequirement = function(requirementUrl, preload, name, isRoute, def) {
 
         //console.log('add: '+ requirementUrl);
         var self = this;
         var urlPlace = bus.location("n-url:"+requirementUrl);
-        var requirement = {url: requirementUrl, fromUrl: self.resolvedUrl, place: urlPlace, preload: preload, name: name, isRoute: isRoute};
+        var requirement = {url: requirementUrl, fromUrl: self.resolvedUrl, place: urlPlace, preload: preload, name: name, isRoute: isRoute, def: def};
 
         self.requirements.push(requirement);
         self.requirementsSeen[requirement.url] = requirement;
@@ -1720,10 +1751,10 @@
         $.ajax({url: url + suffix, dataType: "text"})
             .done(function(response, status, xhr ){
 
-               //console.log('got file:'+url);
-               urlPlace.write(response);
+                //console.log('got file:'+url);
+                urlPlace.write(response);
 
-               if (isHTML)
+                if (isHTML)
                     parseResponseHTML(response, url);
 
                 urlPlace.write({active: false, done: true}, "status");
@@ -1799,11 +1830,7 @@
     }
 
     function wrapScript(scriptText, url) {
-
-        var website = 'http://cognition';//http://www.cognition.com/';
-        var wrapped =
-                scriptText + "\n//# sourceURL=" + website + url + "";
-        return wrapped;
+        return scriptText + "\n//# sourceURL=http://cognition" + url + "";
     }
 
     function addScriptElement(scriptText) {
@@ -1811,8 +1838,8 @@
         var scriptEle = document.createElement("script");
         scriptEle.type = "text/javascript";
         scriptEle.text = scriptText;
-        // todo add window.onerror global debug system for syntax errors in injected scripts
-        document.head.appendChild(scriptEle); // runs ndash.use(some_object) if html based;
+        // todo add window.onerror global debug system for syntax errors in injected scripts?
+        document.head.appendChild(scriptEle);
 
         scriptEle.parentNode.removeChild(scriptEle);
 
@@ -1892,7 +1919,7 @@
     MapItem.prototype._findPath = function(){
         var item = this;
         do{
-            if(item.path)// && !item.library)
+            if(item.path) // && !item.isAlloy)// && !item.library)
                 return item.path;
             item = item.parent;
         } while(item);
@@ -1909,7 +1936,6 @@
             data: 'dataMap',
             feed: 'feedMap',
             service: 'serviceMap',
-            config: 'config',
             alias: 'aliasMap',
             method: 'methodMap'
         };
@@ -1920,13 +1946,15 @@
 
 
     MapItem.prototype.createAlias = function(def){
-        //var this.aliasZone =
-        return this.aliasMap[def.name] = this._resolveUrl(def.url, def.path);
+        var url = this.aliasMap[def.name] = this._resolveUrl(def.url, def.path);
+        if(def.prop)
+            this.exposeProp(def.name, url);
+        return url;
     };
 
     MapItem.prototype.createValve = function(def){
 
-        var valveMap = this.valveMap = this.valveMap || {dataMap: null, aliasMap: null, config: null}; // todo switch config to configMap
+        var valveMap = this.valveMap = this.valveMap || {dataMap: null, aliasMap: null};
         var thingKey = def.thing + 'Map';
         var accessHash = valveMap[thingKey] = valveMap[thingKey] || {};
         for(var i = 0; i < def.allow.length; i++){
@@ -2000,9 +2028,6 @@
         var dataPlace;
         var pipePlace;
         var sensor;
-        var actualPlaceNames = [];
-
-
 
         if(def.find){
 
@@ -2012,29 +2037,13 @@
 
         } else {
 
-            // todo can rm this? -- checks for data good
-            //
-            //for (var i = 0; i < def.watch.length; i++) {
-            //    dataPlace = mi.find(def.watch[i], def.thing, def.where);
-            //    if (!def.optional && !dataPlace) {
-            //        mi.throwError("Could not build sensor: " + def.thing + ":" + def.watch[i] + ":" + def.where + " in " + mi.resolvedUrl);
-            //        return;
-            //    }
-            //    if (dataPlace)
-            //        actualPlaceNames.push(dataPlace._name);
-            //}
-
-            // todo make multiloc upfront and don't search names again
-            //if (actualPlaceNames.length === 0)
-            //    return null; // optional places not found
-
             dataPlace = mi.cogZone.findData(def.watch, def.where, def.optional);
 
             if(!dataPlace && def.optional)
                 return null;
 
             sensor = dataPlace.on(def.topic);
-            //sensor = bus.location(actualPlaceNames).on(def.topic);
+
         }
 
         var context = mi.scriptData;
@@ -2062,8 +2071,8 @@
         var multiSensor = null;
         if(def.watch.length > 1) {
 
-                multiSensor = sensor; // add source (multi to source) and grab() -- grab all data upstream in a merged
-                sensor = sensor.merge().on(def.topic).batch();
+            multiSensor = sensor;
+            sensor = sensor.merge().on(def.topic).batch();
 
         } else if(def.batch) {
             sensor.batch();
@@ -2078,7 +2087,7 @@
             sensor.emit(this._resolveValueFromType(def.emit, def.emitType))
         }
 
-        if(def.retain)
+        if(def.retain && !def.forget)
             sensor.retain();
 
         if(def.group && multiSensor) {
@@ -2099,17 +2108,17 @@
         if(def.gather && def.gather.length > 0)
             sensor.gather(def.gather);
 
-        if(def.demand){
-            pipePlace = mi.demandData(def.demand); // todo move all this creation of data point into defs so creation order is same
-            mi.scriptData[def.demand] = pipePlace; // todo replace with exposeProp and check for existence, throw errors
-            sensor.pipe(pipePlace);
-        }
-        else if(def.pipe) {
-            pipePlace = mi._find(def.pipe, 'dataMap', def.pipeWhere);
-            sensor.pipe(pipePlace);
+        if(def.pipe) {
+            pipePlace = mi.cogZone.findData(def.pipe, def.pipeWhere, def.optional);
+            if(pipePlace)
+                sensor.pipe(pipePlace);
+        } else if(def.toggle){
+            var togglePlace = mi.cogZone.findData(def.toggle, def.pipeWhere, def.optional);
+            if(togglePlace)
+                sensor.run(function(){ togglePlace.toggle();});
         }
 
-        if(def.run && !def.demand && !def.pipe) {
+        if(def.run && !def.toggle && !def.pipe) {
             var callback = context[def.run];
             sensor.run(callback);
         }
@@ -2131,9 +2140,6 @@
 
     };
 
-
-
-
     MapItem.prototype.exposeProp = function(name, value){
         var mi = this;
         if(mi.scriptData[name])
@@ -2150,7 +2156,7 @@
         if(!prop && def.optional)
             return;
 
-        if(prop === undefined && def.thing !== 'config') // todo force optional flag use for config too
+        if(prop === undefined)
             mi.throwError("Could not build Prop: " + def.find + ":" + def.thing + ":" + def.where);
 
         if(mi.scriptData[def.name])
@@ -2167,17 +2173,8 @@
     };
 
     MapItem.prototype.findMethod = function(name, where){
-            return this._find(name, 'methodMap', where);
+        return this._find(name, 'methodMap', where);
     };
-
-
-    //MapItem.prototype._find2 = function(name, map, where) {
-    //
-    //    if(map !== 'dataMap')
-    //        return this._find(name, map, where);
-    //
-    //    return this.cogZone.findData(name, where);
-    //};
 
     MapItem.prototype._find = function(name, map, where, optional) {
 
@@ -2185,17 +2182,17 @@
         if(map === 'dataMap')
             return this.cogZone.findData(name, where, optional);
 
-        where = where || FIRST; // options: local, first, outer, last
+        where = where || 'first'; // options: local, parent, first, outer, last
 
-        if(where === LOCAL)
+        if(where === 'local')
             return this._findLocal(name, map);
-        else if(where === FIRST)
+        else if(where === 'first')
             return this._findFirst(name, map);
-        else if(where === OUTER)
+        else if(where === 'outer')
             return this._findOuter(name, map);
-        else if(where === LAST)
+        else if(where === 'last')
             return this._findLast(name, map);
-        else if(where === PARENT)
+        else if(where === 'parent')
             return this._findFromParent(name, map);
         else
             throw new Error('Invalid option for [where]: ' + where);
@@ -2309,53 +2306,14 @@
         return this._find(name, 'dataMap', where, optional);
     };
 
-    MapItem.prototype.findConfig = function(name, where){
-        return this._find(name, 'config', where);
-    };
-
     MapItem.prototype.findAlias = function(name, where){
         return this._find(name, 'aliasMap', where);
     };
 
     MapItem.prototype.demandData = function(name){
         return this.cogZone.demandData(name);
-        //return this.findData(name, LOCAL) || this.createData({name: name});
     };
 
-    MapItem.prototype.createConfig = function(name, value){
-        this.config[name] = value;
-    };
-
-
-    MapItem.prototype.createConfig2 = function(def){
-
-        var self = this;
-        var name = def.name;
-        if(name.indexOf(":")!=-1)
-            self.throwError("Invalid config name: " + name);
-
-        var value = def.value;
-        var type = def.valueType;
-        var inherited = false;
-
-        if (def.inherit) {
-            value = self._find(name, 'config', 'first');
-            inherited = true;
-        }
-
-        if (!inherited || value === undefined)
-            value = this._resolveValueFromType(value, type);
-
-        if(def.prop){
-            if(self.scriptData[def.name])
-                self.throwError("Property already defined: " + def.name);
-            self.scriptData[def.name] = value;
-        }
-
-        this.config[name] = value; // todo become configMap
-
-        return value;
-    };
 
     MapItem.prototype._resolveValueFromType = function(value, type, demandIt){
 
@@ -2373,9 +2331,6 @@
 
         if(type === OBJECT)
             return (typeof value === 'object') ? value : null;
-
-        if(type === CONFIG)
-            return this.findConfig(value); // todo add error if not found?
 
         if(type === DATA)
             return (demandIt) ? this.demandData(value) : this.findData(value);
@@ -2415,6 +2370,31 @@
             }
             return method.call(context);
         }
+    };
+
+    MapItem.prototype.createAdapter = function(def){
+
+        var z = this.cogZone;
+        var data = z.demandData(def.name); // local data point
+        var itemName = def.item || (this.parent.isChain ? this.parent.item : this.item); // todo look up why diff on chains - need alloy skip? need pinion check?
+        var options = z.findData(itemName).read(); // todo add error crap if this stuff fails
+
+        var fieldName = this._resolveValueFromType(def.field, def.fieldType);
+        var externalName = options[fieldName];
+
+        if(!externalName && def.optional) return;
+
+        var externalData = z.findData(externalName, 'parent', def.optional); // name of data point to follow or control
+
+        if(!externalData) return;
+
+
+        if(def.control){
+            data.on('*').pipe(externalData);
+        } else {
+            externalData.on('*').pipe(data).autorun();
+        }
+
     };
 
     MapItem.prototype.createData = function(def){
@@ -2463,12 +2443,14 @@
             data.route();
         }
 
-
-        data.initialize(value);
+        data.initialize(value); // adapt after this?
 
         if(def.servicePresent || def.url) {
 
             var settings = def.servicePresent ? this._resolveValueFromType(def.service, def.serviceType) : {};
+
+            if(typeof settings === 'function')
+                settings = settings.call(this);
 
             settings.url = def.url || settings.url;
             settings.path = def.path || settings.path;
@@ -2498,26 +2480,26 @@
     //  target : an optional opening target (a name, or "_blank"), defaults to "_self"
     MapItem.prototype.postToBlankWindow = function(url, data) {
 
-            var form = document.createElement("form");
-            form.action = url;
-            form.method = 'POST';
-            form.target = '_blank';
+        var form = document.createElement("form");
+        form.action = url;
+        form.method = 'POST';
+        form.target = '_blank';
 
-            if (data) {
-                for (var key in data) {
-                    var input = document.createElement("textarea");
-                    input.name = key;
-                    input.value = typeof data[key] === "object" ? JSON.stringify(data[key]) : data[key];
-                    form.appendChild(input);
-                }
+        if (data) {
+            for (var key in data) {
+                var input = document.createElement("textarea");
+                input.name = key;
+                input.value = typeof data[key] === "object" ? JSON.stringify(data[key]) : data[key];
+                form.appendChild(input);
             }
+        }
 
-            form.style.display = 'none';
-            document.body.appendChild(form);
-            form.submit();
-            form.parentNode.removeChild(form);
+        form.style.display = 'none';
+        document.body.appendChild(form);
+        form.submit();
+        form.parentNode.removeChild(form);
 
-     };
+    };
 
     var Service = function(){
 
@@ -2622,6 +2604,7 @@
 
     WebService.prototype.settings = function(settings) {
 
+
         if(arguments.length==0)
             return this._settings; // todo copy and freeze object to avoid outside mods?
 
@@ -2656,7 +2639,7 @@
 
     WebService.prototype.isActive = function(){
 
-        return self._xhr && self._xhr.readyState && self._xhr.readyState != 4;
+        return this._xhr && this._xhr.readyState && this._xhr.readyState != 4;
 
     };
 
@@ -2695,6 +2678,7 @@
         self.abort(); // this should not be needed, possible sanity check
 
         self._location.write(self._settings, 'request');
+        self._location.write('busy', 'condition');
 
         var settings = {};
 
@@ -2710,6 +2694,7 @@
                 self._location.write(response, 'done');
                 self._location.write(response, 'always');
                 self._location.write(status, 'status');
+                self._location.write('done', 'condition');
 
             })
             .fail(function(xhr, status, error){
@@ -2717,6 +2702,7 @@
                 self._location.write(error, 'error');
                 self._location.write(error, 'always');
                 self._location.write(status, 'status');
+                self._location.write('error', 'condition');
 
             })
         ;
@@ -2766,7 +2752,7 @@
         return this._feedPlace.on(name);
     };
 
-    // TODO feed cache with array and hashmap to make history size
+
 
     Feed.prototype.to = Feed.prototype.data = function(dataPlace){
         if(arguments.length==0) return this._dataPlace;

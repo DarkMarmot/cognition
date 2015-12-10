@@ -1,7 +1,7 @@
 ;(function($) {
 
     /**
-     * cognition.js (v1.0.17-adapting)
+     * cognition.js (v1.0.19-pipe where)
      *
      * Copyright (c) 2015 Scott Southworth, Landon Barnickle, Nick Lorenson & Contributors
      *
@@ -324,7 +324,8 @@
             data: extractString(sel, 'data'),
             find: extractString(sel, 'id,find,node'), // todo switch all to id
             optional: extractBool(sel, 'optional'),
-            where: extractString(sel, 'where', 'first'),
+            where: extractString(sel, 'from,where', 'first'),
+            pipeWhere: extractString(sel, 'to', 'first'),
             thing: extractString(sel, 'is', 'data'), // data, feed, service
             pipe: extractString(sel, 'pipe'),
             toggle: extractString(sel, 'toggle'),
@@ -336,7 +337,10 @@
             emitPresent: extractHasAttr(sel, 'emit'),
             emitType: null,
             once: extractBool(sel, 'once'),
-            retain: extractBool(sel, 'retain'),
+            retain: extractBool(sel, 'retain'), // opposite of forget, now the default
+            forget: extractBool(sel, 'forget'), // doesn't retain group hash values from prior flush events
+            fresh: extractBool(sel, 'fresh'), // send only fresh, new values (does not autorun with preexisting data)
+            separate: extractBool(sel, 'separate'), // turns off automatic batching and grouping
             group: extractBool(sel, 'group'),
             change: extractBool(sel, 'change,distinct,skipDupes', false),
             extract: extractString(sel, 'extract'),
@@ -377,12 +381,13 @@
             }
         }
 
-        if(!d.find && !d.cmd) // && d.watch.length > 0)
+        if(!d.find && !d.cmd && !d.fresh) // && d.watch.length > 0)
             d.autorun = true;
 
-        d.batch = d.batch || (d.watch.length > 1); // todo -- allow multiples without batching?
+        d.batch = !d.separate && (d.batch || (d.watch.length > 1));
         d.group = d.batch; // todo make new things to avoid grouping and batching with positive statements
         d.retain = d.group;
+
 
         applyFieldType(d, 'transform', PROP);
         applyFieldType(d, 'emit', STRING);
@@ -623,6 +628,41 @@
 
     }
 
+
+    function extractNetDef(sel){
+
+        var d = {
+            name: extractString(sel, 'name'),
+            inherit: extractBool(sel, 'inherit'),
+            isRoute: extractBool(sel, 'route'),
+            value: extractString(sel, 'value'),
+            valuePresent: extractHasAttr(sel, 'value'),
+            valueType: null,
+            adapt: extractString(sel, 'adapt'),
+            adaptType: null,
+            adaptPresent: extractHasAttr(sel, 'adapt'),
+            service: extractString(sel, 'service'),
+            serviceType: null,
+            servicePresent: extractHasAttr(sel, 'service'),
+            params: extractString(sel, 'params'),
+            paramsType: null,
+            paramsPresent: extractHasAttr(sel, 'params'),
+            url: extractString(sel, 'url'),
+            path: extractString(sel, 'path'),
+            verb: extractString(sel, 'verb'),
+            prop: extractBool(sel, 'prop'),
+            request: extractBool(sel, 'req,request', false) // todo support data loc sensored, if object then acts as params in request
+        };
+
+        applyFieldType(d, 'value');
+        applyFieldType(d, 'params', PROP);
+        applyFieldType(d, 'service');
+        applyFieldType(d, 'adapt', PROP);
+
+        return d;
+
+    }
+
     function stringToSimpleValue(str){
 
         if(str === 'true'){
@@ -734,6 +774,13 @@
             var dataDef = extractDataDef($(this));
             arr.push(dataDef);
         });
+
+        var nets = sel.find("net");
+        nets.each(function(){
+            var netDef = extractNetDef($(this));
+            arr.push(netDef);
+        });
+
 
         arr = decs.services = [];
         var services = sel.find("service");
@@ -1117,7 +1164,7 @@
         var self = this;
         var mi = new MapItem();
 
-        mi.cogZone = def.isRoute ? self.cogZone.demandChild(def.name, def.isRoute) : self.cogZone.demandChild();
+        mi.cogZone = def.isRoute ? self.cogZone.demandChild(def.name, def.isRoute) : self.cogZone.demandChild(def.name);
         mi.aliasZone = self.aliasZone.demandChild();
 
         mi.target = def.target;
@@ -1212,7 +1259,7 @@
 
         var alloy = new MapItem();
 
-        alloy.cogZone = def.isRoute ? self.cogZone.demandChild(def.name, def.isRoute) : self.cogZone.demandChild();
+        alloy.cogZone = def.isRoute ? self.cogZone.demandChild(def.name, def.isRoute) : self.cogZone.demandChild(def.name);
         alloy.aliasZone = self.aliasZone.demandChild();
 
         alloy.origin = self; // cog that hosts this alloy
@@ -2024,7 +2071,7 @@
         var multiSensor = null;
         if(def.watch.length > 1) {
 
-            multiSensor = sensor; // add source (multi to source) and grab() -- grab all data upstream in a merged
+            multiSensor = sensor;
             sensor = sensor.merge().on(def.topic).batch();
 
         } else if(def.batch) {
@@ -2040,7 +2087,7 @@
             sensor.emit(this._resolveValueFromType(def.emit, def.emitType))
         }
 
-        if(def.retain)
+        if(def.retain && !def.forget)
             sensor.retain();
 
         if(def.group && multiSensor) {
@@ -2062,11 +2109,11 @@
             sensor.gather(def.gather);
 
         if(def.pipe) {
-            pipePlace = mi.cogZone.findData(def.pipe, 'first', def.optional); // mi._find(def.pipe, 'dataMap', def.pipeWhere);
+            pipePlace = mi.cogZone.findData(def.pipe, def.pipeWhere, def.optional);
             if(pipePlace)
                 sensor.pipe(pipePlace);
         } else if(def.toggle){
-            var togglePlace = mi.cogZone.findData(def.toggle, 'first', def.optional);
+            var togglePlace = mi.cogZone.findData(def.toggle, def.pipeWhere, def.optional);
             if(togglePlace)
                 sensor.run(function(){ togglePlace.toggle();});
         }
@@ -2131,10 +2178,11 @@
 
     MapItem.prototype._find = function(name, map, where, optional) {
 
-        where = where || 'first'; // options: local, parent, first, outer, last
 
         if(map === 'dataMap')
             return this.cogZone.findData(name, where, optional);
+
+        where = where || 'first'; // options: local, parent, first, outer, last
 
         if(where === 'local')
             return this._findLocal(name, map);
