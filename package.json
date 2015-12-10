@@ -1,6 +1,6 @@
 {
   "name": "cognition-framework",
-  "version": "1.0.16-adapting",
+  "version": "1.0.17",
   "description": "Cogntion JS SPA framework",
   "main": "dist/cognition.js",
   "directories": {
@@ -10,10 +10,10 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "contributors": [
-      {
-          "name": "Scott Southworth",
-          "email": "scott.southworth@gmail.com"
-      }
+    {
+      "name": "Scott Southworth",
+      "email": "scott.southworth@gmail.com"
+    }
   ],
   "repository": {
     "type": "git",
@@ -28,5 +28,10 @@
   "dependencies": {
     "catbus": "^2.0.7",
     "jquery": "^2.1.4"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-connect": "^2.2.0",
+    "gulp-load-plugins": "^1.1.0"
   }
 }
